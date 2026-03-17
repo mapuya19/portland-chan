@@ -1,8 +1,8 @@
-# Portland Itinerary App
+# Itinerary App
 
-A Vite-based static site for a Portland, ME Saturday itinerary with interactive Leaflet maps.
+A map visualization site for a trip to Portland, Maine (for Matthew Chan). Interactive Leaflet map showing Saturday stops from Airbnb to lighthouse and dinner.
 
-**Live Demo:** https://[username].github.io/portland-chan/
+**Live Demo:** https://matthewapuya.com/portland-chan
 
 ## Features
 

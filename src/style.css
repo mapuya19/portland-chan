@@ -55,6 +55,25 @@ header p {
   white-space: nowrap;
 }
 
+.notion-btn {
+  background: var(--card);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.notion-btn:hover {
+  background: var(--ink);
+  color: white;
+}
+
 .layout {
   display: grid;
   grid-template-columns: 310px 1fr;
@@ -235,7 +254,13 @@ header p {
     min-height: auto;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .notion-btn {
+    margin-left: 0;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
   }
 
   header h1 {

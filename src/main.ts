@@ -4,9 +4,12 @@ import { initMap, focusStop as focusStopOnMap, openFirstMarker } from './map.js'
 
 // Build the sidebar with stops
 const sidebar = document.getElementById('sidebar');
+if (!sidebar) {
+  throw new Error('Sidebar element not found');
+}
 
 // Helper to create a stop element
-function createStopElement(stop, index) {
+function createStopElement(stop: typeof stops[0], index: number): HTMLDivElement {
   const isDrive = stop.type === 'drive';
   const div = document.createElement('div');
   div.className = `stop${isDrive ? ' is-drive' : ''}`;
@@ -22,7 +25,7 @@ function createStopElement(stop, index) {
 }
 
 // Helper to create a drive divider
-function createDriveDivider(text) {
+function createDriveDivider(text: string): HTMLDivElement {
   const div = document.createElement('div');
   div.className = 'drive-divider';
   div.textContent = text;
@@ -30,7 +33,7 @@ function createDriveDivider(text) {
 }
 
 // Build the sidebar content
-function buildSidebar() {
+function buildSidebar(): void {
   stops.forEach((stop, index) => {
     // Add drive divider before stops that come after a drive leg
     if (driveLegs.has(`${index - 1}-${index}`) && driveDividers[index]) {
@@ -45,7 +48,7 @@ function buildSidebar() {
 }
 
 // Focus on a stop
-function focusStop(idx) {
+function focusStop(idx: number): void {
   // Remove active class from all stops
   const allStops = document.querySelectorAll('.stop');
   allStops.forEach(s => s.classList.remove('active'));
@@ -58,11 +61,11 @@ function focusStop(idx) {
 }
 
 // Initialize everything
-async function init() {
+async function init(): Promise<void> {
   await initMap();
   buildSidebar();
   openFirstMarker();
-  
+
   // Set first stop as active
   const firstStop = document.querySelector('.stop');
   if (firstStop) firstStop.classList.add('active');

@@ -1,21 +1,29 @@
-import { stops, driveLegs, driveIdxs } from './data/stops.js';
+import { stops, driveLegs, driveIdxs, type Stop } from './data/stops.js';
 
-// Leaflet is loaded via CDN in index.html
-const L = window.L;
-if (!L) {
-  console.error('Leaflet failed to load from CDN');
-  const mapEl = document.getElementById('map');
-  if (mapEl) {
-    mapEl.innerHTML = '<p style="padding:20px;text-align:center;">Map failed to load. Please refresh.</p>';
+// Leaflet is loaded via CDN - use global L
+declare global {
+  interface Window {
+    L: typeof import('leaflet');
   }
 }
+
+const L = window.L;
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
-let map;
-let markers;
+let map: ReturnType<typeof L.map> | undefined;
+let markers: ReturnType<typeof L.marker>[] | undefined;
+
+interface RouteResult {
+  coords: L.LatLngExpression[];
+  isDrive: boolean;
+}
 
 // Fetch route from Mapbox Directions API
-async function fetchRoute(start, end, profile) {
+async function fetchRoute(
+  start: Stop,
+  end: Stop,
+  profile: 'driving' | 'walking'
+): Promise<L.LatLngExpression[] | null> {
   if (!MAPBOX_TOKEN) {
     console.warn('Mapbox token not found');
     return null;
@@ -32,7 +40,7 @@ async function fetchRoute(start, end, profile) {
     }
     if (data.routes && data.routes[0]) {
       // Mapbox returns [lng, lat] pairs, Leaflet needs [lat, lng]
-      return data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+      return data.routes[0].geometry.coordinates.map(([lng, lat]: [number, number]) => [lat, lng]);
     }
   } catch (e) {
     console.warn('Routing failed, falling back to straight line:', e);
@@ -40,7 +48,17 @@ async function fetchRoute(start, end, profile) {
   return null;
 }
 
-export async function initMap() {
+export async function initMap(): Promise<void> {
+  // Check if Leaflet loaded
+  if (typeof window.L === 'undefined') {
+    console.error('Leaflet failed to load from CDN');
+    const mapEl = document.getElementById('map');
+    if (mapEl) {
+      mapEl.innerHTML = '<p style="padding:20px;text-align:center;">Map failed to load. Please refresh.</p>';
+    }
+    return;
+  }
+
   // Create map instance
   map = L.map('map').setView([43.648, -70.245], 13);
 
@@ -51,7 +69,7 @@ export async function initMap() {
   }).addTo(map);
 
   // Create marker icon function
-  function makeIcon(num, isDrive) {
+  function makeIcon(num: number, isDrive: boolean): ReturnType<typeof L.divIcon> {
     const bg = isDrive ? '#b85c2c' : '#1a1a1a';
     return L.divIcon({
       className: '',
@@ -63,7 +81,7 @@ export async function initMap() {
   }
 
   // Escape HTML to prevent XSS
-  function escapeHtml(str) {
+  function escapeHtml(str: string): string {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
@@ -72,7 +90,7 @@ export async function initMap() {
   // Create markers
   markers = stops.map((s, i) =>
     L.marker([s.lat, s.lng], { icon: makeIcon(i + 1, driveIdxs.has(i)) })
-      .addTo(map)
+      .addTo(map!)
       .bindPopup(
         `<div class="popup-time">${escapeHtml(s.time)}</div><div class="popup-name">${escapeHtml(s.name)}</div><div class="popup-desc">${escapeHtml(s.desc)}</div>`,
         { maxWidth: 210 }
@@ -80,7 +98,7 @@ export async function initMap() {
   );
 
   // Fetch all routes in parallel for faster loading
-  const routePromises = [];
+  const routePromises: Promise<RouteResult>[] = [];
   for (let i = 0; i < stops.length - 1; i++) {
     const isDrive = driveLegs.has(`${i}-${i + 1}`);
     const profile = isDrive ? 'driving' : 'walking';
@@ -97,9 +115,9 @@ export async function initMap() {
     L.polyline(coords, {
       color: isDrive ? '#b85c2c' : '#1a1a1a',
       weight: 3,
-      dashArray: isDrive ? '7 5' : null,
+      dashArray: isDrive ? '7 5' : undefined,
       opacity: 0.7
-    }).addTo(map);
+    }).addTo(map!);
   });
 
   // Add legend
@@ -113,15 +131,15 @@ export async function initMap() {
   legend.addTo(map);
 }
 
-export function focusStop(idx) {
+export function focusStop(idx: number): void {
   if (map && markers && markers[idx]) {
     map.flyTo([stops[idx].lat, stops[idx].lng], 15, { duration: 0.7 });
     markers[idx].openPopup();
   }
 }
 
-export function openFirstMarker() {
+export function openFirstMarker(): void {
   if (markers && markers[0]) {
-    setTimeout(() => markers[0].openPopup(), 600);
+    setTimeout(() => markers![0].openPopup(), 600);
   }
 }

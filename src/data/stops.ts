@@ -1,4 +1,13 @@
-export const stops = [
+export interface Stop {
+  lat: number;
+  lng: number;
+  name: string;
+  time: string;
+  desc: string;
+  type: 'walk' | 'drive';
+}
+
+export const stops: Stop[] = [
   {
     lat: 43.6560,
     lng: -70.2719,
@@ -81,10 +90,10 @@ export const stops = [
   },
 ];
 
-export const driveLegs = new Set(['2-3', '6-7', '7-8']);
-export const driveIdxs = new Set([3, 7, 8]);
+export const driveLegs: Set<string> = new Set(['2-3', '6-7', '7-8']);
+export const driveIdxs: Set<number> = new Set([3, 7, 8]);
 
-export const driveDividers = {
+export const driveDividers: Record<number, string> = {
   3: '🚗 Drive to Old Port — 5 min',
   7: '🚗 Drive to lighthouse — 20 min',
   8: '🚗 Drive back to Old Port — 20 min'

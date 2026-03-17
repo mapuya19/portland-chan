@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portland, ME — Saturday Itinerary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+</head>
+<body>
+  <header>
+    <h1>Portland, ME — <span>Saturday</span></h1>
+    <p>Airbnb → Tandem → Flea → Old Port → Lighthouse → Dinner</p>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="map-wrap">
+      <div id="map"></div>
+      <a class="gmaps-btn" href="https://www.google.com/maps/dir/121+Grant+St,+Portland,+ME/742+Congress+St,+Portland,+ME/585+Congress+St,+Portland,+ME/86+Middle+St,+Portland,+ME/177+Commercial+St,+Portland,+ME/Fort+Williams+Park,+Cape+Elizabeth,+ME/414+Fore+St,+Portland,+ME/285+Commercial+St,+Portland,+ME" target="_blank" rel="noopener noreferrer">↗ Open in Google Maps</a>
+    </div>
+  </div>
+
+  <!-- Leaflet loaded BEFORE the main script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
